@@ -1,120 +1,34 @@
-<template>
-  <v-container class="about">
-    <h1 class="my-3 text-h5 font-weight-bold">使用者基本資料維護</h1>
-    <v-form v-model="valid" @submit.prevent="queryHandler">
-      <v-card border class="pa-4">
-        <v-row>
-          <v-container>
-            <v-row>
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.companyName"
-                  :counter="10"
-                  label="隸屬公司"
-                  density="compact"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.pid"
-                  :counter="10"
-                  label="用戶帳號"
-                  density="compact"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.userName"
-                  :counter="10"
-                  label="姓名"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.email"
-                  label="E-mail"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.RoleID"
-                  label="角色"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-row>
-      </v-card>
-      <div class="my-4 d-flex">
-        <v-spacer></v-spacer>
-        <v-btn class="me-4" color="grey text-white" @click="handleReset">
-          重設
-        </v-btn>
-        <v-btn type="submit" color="blue-darken-2"> 查詢 </v-btn>
-      </div>
-    </v-form>
-
-    <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
-    <v-card border class="pa-4">
-      <v-data-table-server
-        v-model:itemsPerPage="itemsPerPage"
-        :headers="headers"
-        :items-length="totalItems"
-        :items="serverItems"
-        :loading="loading"
-        class="elevation-1"
-        item-value="name"
-        @update:options="loadItems"
-      ></v-data-table-server>
-    </v-card>
-  </v-container>
-</template>
-
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 
-// 查詢表單
 const valid = ref(false);
-const form = ref({
+const loading = ref(true);
+const page = ref(1);
+const itemsPerPage = ref(5);
+const serverItems = ref([]);
+const totalItems = ref(0);
+
+const form = reactive({
   companyName: null,
   pid: null,
   userName: null,
   email: null,
   RoleID: null,
 });
-
-function queryHandler() {
-  console.log("form:", form);
-}
-
-function handleReset() {
-  console.log("handleReset");
-}
-
-// 顯示表單
-const desserts = [
+const headers = reactive([
+  {
+    title: "Dessert (100g serving)",
+    align: "start",
+    sortable: false,
+    key: "name",
+  },
+  { title: "Calories", key: "calories", align: "end" },
+  { title: "Fat (g)", key: "fat", align: "end" },
+  { title: "Carbs (g)", key: "carbs", align: "end" },
+  { title: "Protein (g)", key: "protein", align: "end" },
+  { title: "Iron (%)", key: "iron", align: "end" },
+]);
+const desserts = reactive([
   {
     name: "Frozen Yogurt",
     calories: 159,
@@ -195,8 +109,99 @@ const desserts = [
     protein: 4.9,
     iron: "22",
   },
-];
+  {
+    name: "Frozen Yogurt",
+    calories: 159,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    iron: "1",
+  },
+  {
+    name: "Jelly bean",
+    calories: 375,
+    fat: 0.0,
+    carbs: 94,
+    protein: 0.0,
+    iron: "0",
+  },
+  {
+    name: "KitKat",
+    calories: 518,
+    fat: 26.0,
+    carbs: 65,
+    protein: 7,
+    iron: "6",
+  },
+  {
+    name: "Eclair",
+    calories: 262,
+    fat: 16.0,
+    carbs: 23,
+    protein: 6.0,
+    iron: "7",
+  },
+  {
+    name: "Gingerbread",
+    calories: 356,
+    fat: 16.0,
+    carbs: 49,
+    protein: 3.9,
+    iron: "16",
+  },
+  {
+    name: "Ice cream sandwich",
+    calories: 237,
+    fat: 9.0,
+    carbs: 37,
+    protein: 4.3,
+    iron: "1",
+  },
+  {
+    name: "Lollipop",
+    calories: 392,
+    fat: 0.2,
+    carbs: 98,
+    protein: 0,
+    iron: "2",
+  },
+  {
+    name: "Cupcake",
+    calories: 305,
+    fat: 3.7,
+    carbs: 67,
+    protein: 4.3,
+    iron: "8",
+  },
+  {
+    name: "Honeycomb",
+    calories: 408,
+    fat: 3.2,
+    carbs: 87,
+    protein: 6.5,
+    iron: "45",
+  },
+  {
+    name: "Donut",
+    calories: 452,
+    fat: 25.0,
+    carbs: 51,
+    protein: 4.9,
+    iron: "22",
+  },
+]);
 
+// 查詢表單
+const queryHandler = () => {
+  console.log("form:", form);
+};
+
+// 重設查詢表單
+const handleReset = () => {
+  console.log("handleReset");
+};
+
+// 查詢表單API
 const FakeAPI = {
   async fetch({ page, itemsPerPage, sortBy }) {
     return new Promise((resolve) => {
@@ -223,36 +228,175 @@ const FakeAPI = {
   },
 };
 
-const itemsPerPage = ref(5);
-const headers = ref([
-  {
-    title: "Dessert (100g serving)",
-    align: "start",
-    sortable: false,
-    key: "name",
-  },
-  { title: "Calories", key: "calories", align: "end" },
-  { title: "Fat (g)", key: "fat", align: "end" },
-  { title: "Carbs (g)", key: "carbs", align: "end" },
-  { title: "Protein (g)", key: "protein", align: "end" },
-  { title: "Iron (%)", key: "iron", align: "end" },
-]);
-const serverItems = ref([]);
-const loading = ref(true);
-const totalItems = ref(0);
-
-function loadItems({ page, itemsPerPage, sortBy }) {
+const loadItems = ({ page, itemsPerPage, sortBy }) => {
   loading.value = true;
   FakeAPI.fetch({ page, itemsPerPage, sortBy }).then(({ items, total }) => {
     serverItems.value = items;
     totalItems.value = total;
     loading.value = false;
   });
-}
+};
+
+const pageCount = computed(() => {
+  return Math.ceil(desserts.length / itemsPerPage.value);
+});
+
+// const getTableHeight = computed(() => {
+//   return Math.ceil(desserts.length / itemsPerPage.value);
+// });
 
 onMounted(() => {
-  loadItems();
+  const payload = {
+    page: 1,
+    itemsPerPage: itemsPerPage.value,
+    sortBy: [],
+  };
+  loadItems(payload);
 });
 </script>
 
-<style></style>
+<template>
+  <v-container class="about">
+    <h1 class="my-3 text-h5 font-weight-bold">使用者基本資料維護</h1>
+    <v-form v-model="valid" @submit.prevent="queryHandler">
+      <v-card border class="pa-4">
+        <v-row>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="form.companyName"
+                  :counter="10"
+                  label="隸屬公司"
+                  density="compact"
+                  variant="outlined"
+                  color="blue-lighten-1"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="form.pid"
+                  :counter="10"
+                  label="用戶帳號"
+                  density="compact"
+                  variant="outlined"
+                  color="blue-lighten-1"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="form.userName"
+                  :counter="10"
+                  label="姓名"
+                  variant="outlined"
+                  color="blue-lighten-1"
+                  density="compact"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="form.email"
+                  label="E-mail"
+                  variant="outlined"
+                  color="blue-lighten-1"
+                  density="compact"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="form.RoleID"
+                  label="角色"
+                  variant="outlined"
+                  color="blue-lighten-1"
+                  density="compact"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-row>
+      </v-card>
+      <div class="my-4 d-flex">
+        <v-spacer></v-spacer>
+        <v-btn class="me-4" color="grey text-white" @click="handleReset">
+          重設
+        </v-btn>
+        <v-btn type="submit" color="blue-darken-2"> 查詢 </v-btn>
+      </div>
+    </v-form>
+
+    <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
+    <v-card border>
+      <v-data-table-server
+        v-model:page="page"
+        :loading="loading"
+        :headers="headers"
+        :items-length="totalItems"
+        :items-per-page="itemsPerPage"
+        :items="serverItems"
+        class="elevation-1"
+        item-value="name"
+        hide-default-footer
+        fixed-header
+        hover
+        @update:options="loadItems"
+      ></v-data-table-server>
+    </v-card>
+
+    <v-card class="mt-2" flat>
+      <v-row class="ma-0 d-flex align-center justify-space-between">
+        <v-col>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            density="compact"
+            rounded="circle"
+          ></v-pagination>
+        </v-col>
+
+        <v-col class="d-flex align-center">
+          <v-spacer></v-spacer>
+          <div class="text-subtitle-1 text-medium-emphasis pe-4">
+            第 {{ page }} / {{ pageCount }} 頁， 共 {{ totalItems }} 筆
+          </div>
+          <div class="text-subtitle-1 text-medium-emphasis">每頁筆數：</div>
+          <div style="width: 110px">
+            <v-select
+              :items="[5, 10, 20, 50, 100]"
+              :model-value="itemsPerPage"
+              :total-visible="7"
+              class="pa-2"
+              density="compact"
+              variant="outlined"
+              hide-details
+              @update:model-value="itemsPerPage = parseInt($event, 10)"
+            ></v-select>
+          </div>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-container>
+</template>
+
+<style lang="scss" scoped>
+@media (min-width: 2560px) {
+  .v-container {
+    max-width: 1800px;
+  }
+}
+:deep(.v-table__wrapper) {
+  max-height: calc(100vh - 515px);
+  min-height: 300px;
+}
+:deep(.v-data-table-footer) {
+  display: none;
+}
+</style>
