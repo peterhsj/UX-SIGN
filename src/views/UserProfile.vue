@@ -1,5 +1,8 @@
 <script setup>
+import { useCountStore } from "@/store/app.js";
 import { ref, reactive, onMounted, computed, watch } from "vue";
+
+const store = useCountStore();
 
 const valid = ref(false);
 const loading = ref(true);
@@ -258,6 +261,10 @@ onMounted(() => {
 <template>
   <v-container class="about">
     <h1 class="my-3 text-h5 font-weight-bold">使用者基本資料維護</h1>
+    <h3>{{ store }}</h3>
+    <h3>count:{{ store.count }}</h3>
+    <h3>雙倍：{{ store.doubleCount }}</h3>
+    <v-btn @click="store.increment">+1</v-btn>
     <v-form v-model="valid" @submit.prevent="queryHandler">
       <v-card border class="pa-4">
         <v-row>
