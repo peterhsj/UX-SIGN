@@ -7,7 +7,7 @@
     </div>
     <h1>Made By Actions</h1>
     <div v-for="user in users" :key="user.id">
-      {{ user.id }} {{ user.name }} /{{ user.address.street }}
+      {{ user.id }} {{ user.name }} / {{ user.address.street }}
     </div>
   </div>
 </template>
@@ -26,6 +26,8 @@ const users = computed(() => {
 onMounted(() => {
   store.fetchUsers();
 });
+
+console.log({ getUsers });
 </script>
 
 <style></style>

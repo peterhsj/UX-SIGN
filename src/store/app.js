@@ -1,4 +1,5 @@
 // Utilities
+import { BaseService } from '@/store/module/base.service'
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
@@ -18,9 +19,8 @@ export const useCountStore = defineStore('counter', () => {
   return {count, doubleCount, increment}
 })
 
-// 導入 axios 進行 HTTP 請求
-import axios from "axios"
-export const useUserStore = defineStore("user", {
+// 進行 HTTP 請求
+export const useUserStore =  defineStore("user", {
   state: () => ({
       users: [],
   }),
@@ -32,8 +32,10 @@ export const useUserStore = defineStore("user", {
   actions: {
     async fetchUsers() {
       try {
-        const data = await axios.get('https://jsonplaceholder.typicode.com/users')
-          this.users = data.data
+        const data = await BaseService.get('/users').then(res => res);
+        console.log(data)  
+        //this.users = data.data
+
         }
         catch (error) {
           alert(error)
