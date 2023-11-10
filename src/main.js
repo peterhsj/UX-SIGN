@@ -6,6 +6,7 @@
 
 // Components
 import App from './App.vue'
+import "@/conf/axios-config"
 
 // Composables
 import { createApp } from 'vue'
