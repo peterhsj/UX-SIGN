@@ -3,18 +3,10 @@
     <v-app-bar-title>
       <v-icon icon="mdi-circle-slice-6" />
     </v-app-bar-title>
-    <v-btn
-      size="large"
-      to="/"
-      class="mx-2 text-h6 font-weight-bold text-blue-grey-darken-3"
-    >
+    <v-btn size="large" to="/" class="mx-2 text-h6 font-weight-bold text-blue-grey-darken-3">
       合約
     </v-btn>
-    <v-btn
-      size="large"
-      to="/about"
-      class="mx-2 text-h6 font-weight-bold text-blue-grey-darken-3"
-    >
+    <v-btn size="large" to="/History" class="mx-2 text-h6 font-weight-bold text-blue-grey-darken-3">
       查詢
     </v-btn>
     <v-spacer></v-spacer>
