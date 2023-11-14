@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from "vue";
+import EditDialog from "@/components/userProfile/EditDialog.vue";
 
 const valid = ref(false);
 const searchForm = ref(null);
@@ -257,6 +258,10 @@ const pageCount = computed(() => {
   return Math.ceil(desserts.length / itemsPerPage.value);
 });
 
+const addUser = () => {
+  console.log("add");
+};
+
 onMounted(() => {
   // 載入表單資料
   const payload = {
@@ -343,14 +348,29 @@ onMounted(() => {
           </v-container>
         </v-row>
       </v-card>
-      <div class="my-4 d-flex">
-        <v-spacer></v-spacer>
-        <v-btn class="me-4" color="grey text-white" @click="handleReset">
-          重設
-        </v-btn>
-        <v-btn type="submit" color="blue-darken-2"> 查詢 </v-btn>
+      <div class="my-4 d-flex justify-space-between align-center">
+        <div>
+          <v-tooltip text="新增使用者" location="top">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-plus"
+                size="small"
+                color="green-darken-1"
+                @click="addUser"
+              ></v-btn>
+            </template>
+          </v-tooltip>
+        </div>
+        <div>
+          <v-btn class="me-4" color="grey text-white" @click="handleReset">
+            重設
+          </v-btn>
+          <v-btn type="submit" color="blue-darken-2"> 查詢 </v-btn>
+        </div>
       </div>
     </v-form>
+    <EditDialog></EditDialog>
 
     <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
     <v-card border>
