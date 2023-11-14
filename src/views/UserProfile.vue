@@ -1,15 +1,22 @@
 <script setup>
-import { useCountStore } from "@/store/app.js";
 import { ref, reactive, onMounted, computed, watch } from "vue";
 
-const store = useCountStore();
-
 const valid = ref(false);
+const searchForm = ref(null);
 const loading = ref(true);
 const page = ref(1);
 const itemsPerPage = ref(5);
 const serverItems = ref([]);
 const totalItems = ref(0);
+
+// E-mail 欄位檢核
+const rules = ref({
+  email: (value) => {
+    const pattern =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return !value || pattern.test(value) || "請檢查 e-mail 格式是否正確";
+  },
+});
 
 const form = reactive({
   companyName: null,
@@ -196,12 +203,17 @@ const desserts = reactive([
 
 // 查詢表單
 const queryHandler = () => {
+  // 欄位有錯誤，檢覈未過不能送出表單
+  searchForm.value.validate();
+  if (!valid.value) return;
+
+  // 送出表單
   console.log("form:", form);
 };
 
 // 重設查詢表單
 const handleReset = () => {
-  console.log("handleReset");
+  searchForm.value.reset();
 };
 
 // 查詢表單API
@@ -240,15 +252,13 @@ const loadItems = ({ page, itemsPerPage, sortBy }) => {
   });
 };
 
+// 計算總分頁
 const pageCount = computed(() => {
   return Math.ceil(desserts.length / itemsPerPage.value);
 });
 
-// const getTableHeight = computed(() => {
-//   return Math.ceil(desserts.length / itemsPerPage.value);
-// });
-
 onMounted(() => {
+  // 載入表單資料
   const payload = {
     page: 1,
     itemsPerPage: itemsPerPage.value,
@@ -261,11 +271,7 @@ onMounted(() => {
 <template>
   <v-container class="about">
     <h1 class="my-3 text-h5 font-weight-bold">使用者基本資料維護</h1>
-    <h3>{{ store }}</h3>
-    <h3>count:{{ store.count }}</h3>
-    <h3>雙倍：{{ store.doubleCount }}</h3>
-    <v-btn @click="store.increment">+1</v-btn>
-    <v-form v-model="valid" @submit.prevent="queryHandler">
+    <v-form ref="searchForm" v-model="valid" @submit.prevent="queryHandler">
       <v-card border class="pa-4">
         <v-row>
           <v-container>
@@ -310,22 +316,28 @@ onMounted(() => {
                 <v-text-field
                   v-model="form.email"
                   label="E-mail"
+                  :rules="[rules.email]"
+                  type="mail"
                   variant="outlined"
                   color="blue-lighten-1"
                   density="compact"
-                  hide-details
+                  hide-details="auto"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
+                <v-select
                   v-model="form.RoleID"
                   label="角色"
+                  :items="[
+                    { title: '一般使用者', value: '1' },
+                    { title: '帳號管理員', value: '0' },
+                  ]"
                   variant="outlined"
                   color="blue-lighten-1"
                   density="compact"
                   hide-details
-                ></v-text-field>
+                ></v-select>
               </v-col>
             </v-row>
           </v-container>
