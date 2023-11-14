@@ -26,16 +26,14 @@ export const useUserStore =  defineStore("user", {
   }),
   getters: {
     getUsers(state){
-        return state.users
-      }
+      return state.users
+    }
   },
   actions: {
     async fetchUsers() {
       try {
-        const data = await BaseService.get('/users').then(res => res);
-        console.log(data)  
-        //this.users = data.data
-
+        const data = await BaseService.get('/users');
+        this.users = data.data
         }
         catch (error) {
           alert(error)

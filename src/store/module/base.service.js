@@ -11,7 +11,7 @@ const BaseService = {
     return axios
       .post(url, params, config)
       .then((res) => {
-        console.log(res);
+        return res;
       })
       .catch(err => {
         console.error(`request error: [[${url}]]`, params, config);
@@ -22,7 +22,7 @@ const BaseService = {
     return axios
       .get(url, params)
       .then((res) => {
-        console.log(res);
+        return res;
       })
       .catch(err => {
         console.error(`request error: [[${url}]]`);
