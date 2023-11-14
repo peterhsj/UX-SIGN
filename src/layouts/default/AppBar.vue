@@ -31,6 +31,10 @@
         <v-list-item to="/Logout">
           <v-list-item-title>登出</v-list-item-title>
         </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item to="/Sample">
+          <v-list-item-title>範例</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
   </v-app-bar>
