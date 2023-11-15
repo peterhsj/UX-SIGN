@@ -10,6 +10,9 @@ const itemsPerPage = ref(5);
 const serverItems = ref([]);
 const totalItems = ref(0);
 
+const editDialog = ref(false);
+const editType = ref("");
+
 // E-mail 欄位檢核
 const rules = ref({
   email: (value) => {
@@ -202,6 +205,19 @@ const desserts = reactive([
   },
 ]);
 
+// 權限列表
+const roles = ref([
+  { title: "一般使用者", value: "1" },
+  { title: "帳號管理員", value: "2" },
+  { title: "系統管理員", value: "0" },
+]);
+// 憑證類型
+const regionList = ref([
+  { title: "工商憑證", value: "O" },
+  { title: "自然人憑證", value: "P" },
+  { title: "企業憑證", value: "E" },
+]);
+
 // 查詢表單
 const queryHandler = () => {
   // 欄位有錯誤，檢覈未過不能送出表單
@@ -258,8 +274,10 @@ const pageCount = computed(() => {
   return Math.ceil(desserts.length / itemsPerPage.value);
 });
 
-const addUser = () => {
-  console.log("add");
+// 新增使用者
+const addUser = (type) => {
+  editType.value = type;
+  editDialog.value = true;
 };
 
 onMounted(() => {
@@ -333,11 +351,8 @@ onMounted(() => {
               <v-col cols="12" md="4">
                 <v-select
                   v-model="form.RoleID"
-                  label="角色"
-                  :items="[
-                    { title: '一般使用者', value: '1' },
-                    { title: '帳號管理員', value: '0' },
-                  ]"
+                  label="權限"
+                  :items="roles"
                   variant="outlined"
                   color="blue-lighten-1"
                   density="compact"
@@ -357,20 +372,25 @@ onMounted(() => {
                 icon="mdi-plus"
                 size="small"
                 color="green-darken-1"
-                @click="addUser"
+                @click="addUser('add')"
               ></v-btn>
             </template>
           </v-tooltip>
         </div>
         <div>
-          <v-btn class="me-4" color="grey text-white" @click="handleReset">
+          <v-btn class="me-4 bg-grey text-white" @click="handleReset">
             重設
           </v-btn>
-          <v-btn type="submit" color="blue-darken-2"> 查詢 </v-btn>
+          <v-btn type="submit" class="bg-blue-darken-2"> 查詢 </v-btn>
         </div>
       </div>
     </v-form>
-    <EditDialog></EditDialog>
+    <EditDialog
+      v-model:editDialog="editDialog"
+      :roles="roles"
+      :regionList="regionList"
+      :editType="editType"
+    ></EditDialog>
 
     <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
     <v-card border>
