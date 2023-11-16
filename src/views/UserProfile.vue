@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from "vue";
+import { ref, toRaw, reactive, onMounted, computed, watch } from "vue";
 import EditDialog from "@/components/userProfile/EditDialog.vue";
 
 const valid = ref(false);
@@ -12,10 +12,11 @@ const totalItems = ref(0);
 
 const editDialog = ref(false);
 const editType = ref("");
+let itemData = reactive({});
 
 // E-mail 欄位檢核
 const rules = ref({
-  email: (value) => {
+  eMail: (value) => {
     const pattern =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return !value || pattern.test(value) || "請檢查 e-mail 格式是否正確";
@@ -26,182 +27,47 @@ const form = reactive({
   companyName: null,
   pid: null,
   userName: null,
-  email: null,
-  RoleID: null,
+  eMail: null,
+  roleId: null,
 });
 const headers = reactive([
   {
-    title: "Dessert (100g serving)",
+    title: "公司名稱",
     align: "start",
     sortable: false,
-    key: "name",
+    key: "companyName",
   },
-  { title: "Calories", key: "calories", align: "end" },
-  { title: "Fat (g)", key: "fat", align: "end" },
-  { title: "Carbs (g)", key: "carbs", align: "end" },
-  { title: "Protein (g)", key: "protein", align: "end" },
-  { title: "Iron (%)", key: "iron", align: "end" },
+  { title: "用戶帳號", key: "pid", align: "start" },
+  { title: "姓名", key: "userName", align: "start" },
+  { title: "E-mail", key: "eMail", align: "start" },
+  { title: "權限", key: "roleId", align: "start" },
+  { title: "憑證類型", key: "region", align: "start" },
+  { title: "", key: "Action", align: "center" },
 ]);
 const desserts = reactive([
   {
-    name: "Frozen Yogurt",
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    iron: "1",
+    companyName: "系統管理員",
+    pid: "ifsadmin",
+    userName: "System Admin",
+    eMail: "invoice_test@uxb2b.com",
+    roleId: "0",
+    region: null,
   },
   {
-    name: "Jelly bean",
-    calories: 375,
-    fat: 0.0,
-    carbs: 94,
-    protein: 0.0,
-    iron: "0",
+    companyName: "網際優勢甲方公司",
+    pid: "UserA",
+    userName: "UserA",
+    eMail: "chris@uxb2b.com",
+    roleId: "1",
+    region: "O",
   },
   {
-    name: "KitKat",
-    calories: 518,
-    fat: 26.0,
-    carbs: 65,
-    protein: 7,
-    iron: "6",
-  },
-  {
-    name: "Eclair",
-    calories: 262,
-    fat: 16.0,
-    carbs: 23,
-    protein: 6.0,
-    iron: "7",
-  },
-  {
-    name: "Gingerbread",
-    calories: 356,
-    fat: 16.0,
-    carbs: 49,
-    protein: 3.9,
-    iron: "16",
-  },
-  {
-    name: "Ice cream sandwich",
-    calories: 237,
-    fat: 9.0,
-    carbs: 37,
-    protein: 4.3,
-    iron: "1",
-  },
-  {
-    name: "Lollipop",
-    calories: 392,
-    fat: 0.2,
-    carbs: 98,
-    protein: 0,
-    iron: "2",
-  },
-  {
-    name: "Cupcake",
-    calories: 305,
-    fat: 3.7,
-    carbs: 67,
-    protein: 4.3,
-    iron: "8",
-  },
-  {
-    name: "Honeycomb",
-    calories: 408,
-    fat: 3.2,
-    carbs: 87,
-    protein: 6.5,
-    iron: "45",
-  },
-  {
-    name: "Donut",
-    calories: 452,
-    fat: 25.0,
-    carbs: 51,
-    protein: 4.9,
-    iron: "22",
-  },
-  {
-    name: "Frozen Yogurt",
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    iron: "1",
-  },
-  {
-    name: "Jelly bean",
-    calories: 375,
-    fat: 0.0,
-    carbs: 94,
-    protein: 0.0,
-    iron: "0",
-  },
-  {
-    name: "KitKat",
-    calories: 518,
-    fat: 26.0,
-    carbs: 65,
-    protein: 7,
-    iron: "6",
-  },
-  {
-    name: "Eclair",
-    calories: 262,
-    fat: 16.0,
-    carbs: 23,
-    protein: 6.0,
-    iron: "7",
-  },
-  {
-    name: "Gingerbread",
-    calories: 356,
-    fat: 16.0,
-    carbs: 49,
-    protein: 3.9,
-    iron: "16",
-  },
-  {
-    name: "Ice cream sandwich",
-    calories: 237,
-    fat: 9.0,
-    carbs: 37,
-    protein: 4.3,
-    iron: "1",
-  },
-  {
-    name: "Lollipop",
-    calories: 392,
-    fat: 0.2,
-    carbs: 98,
-    protein: 0,
-    iron: "2",
-  },
-  {
-    name: "Cupcake",
-    calories: 305,
-    fat: 3.7,
-    carbs: 67,
-    protein: 4.3,
-    iron: "8",
-  },
-  {
-    name: "Honeycomb",
-    calories: 408,
-    fat: 3.2,
-    carbs: 87,
-    protein: 6.5,
-    iron: "45",
-  },
-  {
-    name: "Donut",
-    calories: 452,
-    fat: 25.0,
-    carbs: 51,
-    protein: 4.9,
-    iron: "22",
+    companyName: "網際優勢乙方公司",
+    pid: "UserB",
+    userName: "UserB",
+    eMail: "rsung@uxb2b.com",
+    roleId: "2",
+    region: "O",
   },
 ]);
 
@@ -220,7 +86,7 @@ const regionList = ref([
 
 // 查詢表單
 const queryHandler = () => {
-  // 欄位有錯誤，檢覈未過不能送出表單
+  // 欄位有錯誤，檢核未過不能送出表單
   searchForm.value.validate();
   if (!valid.value) return;
 
@@ -260,8 +126,10 @@ const FakeAPI = {
   },
 };
 
+// 列表選項變更時重新查詢
 const loadItems = ({ page, itemsPerPage, sortBy }) => {
   loading.value = true;
+  console.log({ page, itemsPerPage, sortBy });
   FakeAPI.fetch({ page, itemsPerPage, sortBy }).then(({ items, total }) => {
     serverItems.value = items;
     totalItems.value = total;
@@ -278,6 +146,28 @@ const pageCount = computed(() => {
 const addUser = (type) => {
   editType.value = type;
   editDialog.value = true;
+};
+
+// 編輯使用者
+const editUser = (type, item) => {
+  editType.value = type;
+  itemData.value = item;
+  //console.log(editType.value, itemData.value);
+  editDialog.value = true;
+};
+
+// 權限參數轉換文字
+const roleTextTransform = (value) => {
+  const source = toRaw(roles.value);
+  const roleData = source.filter((item) => item.value === value);
+  return roleData.length > 0 ? roleData[0].title : null;
+};
+
+// 憑證類型參數轉換文字
+const regionTextTransform = (value) => {
+  const source = toRaw(regionList.value);
+  const regionData = source.filter((item) => item.value === value);
+  return regionData.length > 0 ? regionData[0].title : null;
 };
 
 onMounted(() => {
@@ -303,7 +193,7 @@ onMounted(() => {
                 <v-text-field
                   v-model="form.companyName"
                   :counter="10"
-                  label="隸屬公司"
+                  label="公司名稱"
                   density="compact"
                   variant="outlined"
                   color="blue-lighten-1"
@@ -337,9 +227,9 @@ onMounted(() => {
 
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="form.email"
+                  v-model="form.eMail"
                   label="E-mail"
-                  :rules="[rules.email]"
+                  :rules="[rules.eMail]"
                   type="mail"
                   variant="outlined"
                   color="blue-lighten-1"
@@ -350,7 +240,7 @@ onMounted(() => {
 
               <v-col cols="12" md="4">
                 <v-select
-                  v-model="form.RoleID"
+                  v-model="form.roleId"
                   label="權限"
                   :items="roles"
                   variant="outlined"
@@ -385,32 +275,74 @@ onMounted(() => {
         </div>
       </div>
     </v-form>
-    <EditDialog
-      v-model:editDialog="editDialog"
-      :roles="roles"
-      :regionList="regionList"
-      :editType="editType"
-    ></EditDialog>
 
     <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
     <v-card border>
       <v-data-table-server
-        v-model:page="page"
+        v-if="totalItems > 0"
         :loading="loading"
         :headers="headers"
         :items-length="totalItems"
         :items-per-page="itemsPerPage"
         :items="serverItems"
-        class="elevation-1"
+        loading-text="資料查詢中... 請稍後"
+        no-data-text="查無資料"
+        class="elevation-1 uxSign--table"
         item-value="name"
         hide-default-footer
         fixed-header
+        color="red"
         hover
         @update:options="loadItems"
-      ></v-data-table-server>
+      >
+        <!-- 權限欄位 -->
+        <template v-slot:item.roleId="{ item }">
+          {{ roleTextTransform(item.roleId) }}
+        </template>
+        <!-- 憑證類型欄位 -->
+        <template v-slot:item.region="{ item }">
+          {{ regionTextTransform(item.region) }}
+        </template>
+        <!-- 操作欄位 -->
+        <template v-slot:item.Action="{ item }">
+          <!-- 編輯 -->
+          <v-tooltip text="編輯" location="top">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-note-edit-outline"
+                size="x-small"
+                color="blue-darken-1"
+                class="mx-1"
+                @click="editUser('edit', item)"
+              ></v-btn>
+            </template>
+          </v-tooltip>
+          <!-- 刪除 -->
+          <v-tooltip text="刪除" location="top">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-trash-can-outline"
+                size="x-small"
+                color="red-lighten-1"
+                class="mx-1"
+                @click="deleteUser(item)"
+              ></v-btn>
+            </template>
+          </v-tooltip>
+        </template>
+      </v-data-table-server>
+      <div v-else class="pa-5 d-flex flex-column align-center justify-center">
+        <v-icon size="70" color="orange-darken-2" aria-hidden="false">
+          mdi-alert-circle-outline
+        </v-icon>
+        <span class="py-2 text-h6 font-weight-bold">查無資料</span>
+      </div>
     </v-card>
 
-    <v-card class="mt-2" flat>
+    <!-- 分頁模組 -->
+    <v-card v-if="totalItems > 0" class="mt-2" flat>
       <v-row class="ma-0 d-flex align-center justify-space-between">
         <v-col>
           <v-pagination
@@ -443,6 +375,15 @@ onMounted(() => {
       </v-row>
     </v-card>
   </v-container>
+
+  <!-- 編輯視窗 -->
+  <EditDialog
+    v-model:editDialog="editDialog"
+    :roles="roles"
+    :regionList="regionList"
+    :editType="editType"
+    :itemData="itemData"
+  ></EditDialog>
 </template>
 
 <style lang="scss" scoped>
@@ -457,5 +398,16 @@ onMounted(() => {
 }
 :deep(.v-data-table-footer) {
   display: none;
+}
+:deep(
+    .v-table.v-table--fixed-header.uxSign--table
+      > .v-table__wrapper
+      > table
+      > thead
+      > tr
+      > th
+  ) {
+  background-color: #ffe0b2 !important;
+  font-weight: bolder;
 }
 </style>

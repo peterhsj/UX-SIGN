@@ -18,21 +18,24 @@ const props = defineProps({
     type: String,
     default: "add",
   },
+  itemData: {
+    type: Object,
+    default: () => [],
+  },
 });
+const valid = ref(false);
+const editForm = ref(null);
 const initForm = ref({
   uuid: null,
-  CompanyName: null,
-  PID: null,
-  UserName: null,
-  Password: null,
-  EMail: null,
-  RoleID: null,
-  Region: null,
+  companyName: null,
+  pid: null,
+  userName: null,
+  passWord: null,
+  eMail: null,
+  roleId: null,
+  region: null,
 });
-
 const formData = ref({});
-const valid = ref(false);
-
 // 欄位檢核
 const rules = ref({
   companyName: (value) => {
@@ -74,9 +77,17 @@ const emit = defineEmits(["update:editDialog"]);
 
 onMounted(() => {
   formData.value = { ...initForm.value };
+  if (props.editType === "edit") {
+    console.log("edit1");
+  }
 });
 
 const saveFormHandler = () => {
+  // 欄位有錯誤，檢核未過不能送出表單
+  editForm.value.validate();
+  if (!valid.value) return;
+
+  // 送出表單
   console.log("formData:", formData.value);
 };
 
@@ -88,8 +99,8 @@ const cancelHandler = () => {
 
 <template>
   <v-row justify="center">
-    <v-dialog v-model.update="props.editDialog" persistent width="1024">
-      <v-card>
+    <v-dialog v-model.update="props.editDialog" persistent width="800">
+      <v-card class="pa-3">
         <v-form
           ref="editForm"
           v-model="valid"
@@ -105,8 +116,8 @@ const cancelHandler = () => {
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="formData.CompanyName"
-                    label="隸屬公司"
+                    v-model="formData.companyName"
+                    label="公司名稱"
                     density="compact"
                     variant="outlined"
                     :rules="[rules.companyName]"
@@ -116,7 +127,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="formData.UserName"
+                    v-model="formData.userName"
                     label="姓名"
                     density="compact"
                     variant="outlined"
@@ -127,7 +138,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="formData.PID"
+                    v-model="formData.pid"
                     label="用戶帳號"
                     density="compact"
                     variant="outlined"
@@ -138,7 +149,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="formData.Password"
+                    v-model="formData.passWord"
                     label="密碼"
                     type="password"
                     density="compact"
@@ -152,7 +163,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                    v-model="formData.EMail"
+                    v-model="formData.eMail"
                     label="Email"
                     density="compact"
                     variant="outlined"
@@ -164,7 +175,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
-                    v-model="formData.RoleID"
+                    v-model="formData.roleId"
                     :items="roles"
                     label="權限設定"
                     density="compact"
@@ -176,7 +187,7 @@ const cancelHandler = () => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
-                    v-model="formData.Region"
+                    v-model="formData.region"
                     :items="regionList"
                     label="憑證類型"
                     density="compact"
