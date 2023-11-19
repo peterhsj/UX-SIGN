@@ -1,5 +1,5 @@
 <script setup>
-import { ref, toRaw, reactive, onMounted, computed, watch } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import EditDialog from "@/components/userProfile/EditDialog.vue";
 
 const valid = ref(false);
@@ -12,6 +12,17 @@ const totalItems = ref(0);
 
 const editDialog = ref(false);
 const editType = ref("");
+// 初始化編輯表單
+const initForm = reactive({
+  uuid: null,
+  companyName: null,
+  pid: null,
+  userName: null,
+  passWord: null,
+  eMail: null,
+  roleId: null,
+  region: null,
+});
 let itemData = reactive({});
 
 // E-mail 欄位檢核
@@ -46,25 +57,31 @@ const headers = reactive([
 ]);
 const desserts = reactive([
   {
+    uuid: "01",
     companyName: "系統管理員",
     pid: "ifsadmin",
     userName: "System Admin",
+    passWord: '231356465',
     eMail: "invoice_test@uxb2b.com",
     roleId: "0",
     region: null,
   },
   {
+    uuid: "02",
     companyName: "網際優勢甲方公司",
     pid: "UserA",
     userName: "UserA",
+    passWord: null,
     eMail: "chris@uxb2b.com",
     roleId: "1",
     region: "O",
   },
   {
+    uuid: "03",
     companyName: "網際優勢乙方公司",
     pid: "UserB",
     userName: "UserB",
+    passWord: null,
     eMail: "rsung@uxb2b.com",
     roleId: "2",
     region: "O",
@@ -72,17 +89,17 @@ const desserts = reactive([
 ]);
 
 // 權限列表
-const roles = ref([
+const roles = [
   { title: "一般使用者", value: "1" },
   { title: "帳號管理員", value: "2" },
   { title: "系統管理員", value: "0" },
-]);
+];
 // 憑證類型
-const regionList = ref([
+const regionList = [
   { title: "工商憑證", value: "O" },
   { title: "自然人憑證", value: "P" },
   { title: "企業憑證", value: "E" },
-]);
+];
 
 // 查詢表單
 const queryHandler = () => {
@@ -145,28 +162,26 @@ const pageCount = computed(() => {
 // 新增使用者
 const addUser = (type) => {
   editType.value = type;
+  itemData = Object.assign(itemData, initForm);
   editDialog.value = true;
 };
 
 // 編輯使用者
 const editUser = (type, item) => {
   editType.value = type;
-  itemData.value = item;
-  //console.log(editType.value, itemData.value);
+  itemData = Object.assign(itemData, item);
   editDialog.value = true;
 };
 
 // 權限參數轉換文字
 const roleTextTransform = (value) => {
-  const source = toRaw(roles.value);
-  const roleData = source.filter((item) => item.value === value);
+  const roleData = roles.filter((item) => item.value === value);
   return roleData.length > 0 ? roleData[0].title : null;
 };
 
 // 憑證類型參數轉換文字
 const regionTextTransform = (value) => {
-  const source = toRaw(regionList.value);
-  const regionData = source.filter((item) => item.value === value);
+  const regionData = regionList.filter((item) => item.value === value);
   return regionData.length > 0 ? regionData[0].title : null;
 };
 
@@ -190,80 +205,40 @@ onMounted(() => {
           <v-container>
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.companyName"
-                  :counter="10"
-                  label="公司名稱"
-                  density="compact"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  hide-details
-                ></v-text-field>
+                <v-text-field v-model="form.companyName" :counter="10" label="公司名稱" density="compact" variant="outlined"
+                  color="blue-lighten-1" hide-details></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.pid"
-                  :counter="10"
-                  label="用戶帳號"
-                  density="compact"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  hide-details
-                ></v-text-field>
+                <v-text-field v-model="form.pid" :counter="10" label="用戶帳號" density="compact" variant="outlined"
+                  color="blue-lighten-1" hide-details></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.userName"
-                  :counter="10"
-                  label="姓名"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details
-                ></v-text-field>
+                <v-text-field v-model="form.userName" :counter="10" label="姓名" variant="outlined" color="blue-lighten-1"
+                  density="compact" hide-details></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="form.eMail"
-                  label="E-mail"
-                  :rules="[rules.eMail]"
-                  type="mail"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details="auto"
-                ></v-text-field>
+                <v-text-field v-model="form.eMail" label="E-mail" :rules="[rules.eMail]" type="mail" variant="outlined"
+                  color="blue-lighten-1" density="compact" hide-details="auto"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-select
-                  v-model="form.roleId"
-                  label="權限"
-                  :items="roles"
-                  variant="outlined"
-                  color="blue-lighten-1"
-                  density="compact"
-                  hide-details
-                ></v-select>
+                <v-select v-model="form.roleId" label="權限" :items="roles" variant="outlined" color="blue-lighten-1"
+                  density="compact" hide-details></v-select>
               </v-col>
             </v-row>
           </v-container>
         </v-row>
       </v-card>
+      <p>{{ itemData || {} }}</p>
+      <p>{{ editType }}</p>
       <div class="my-4 d-flex justify-space-between align-center">
         <div>
           <v-tooltip text="新增使用者" location="top">
             <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="mdi-plus"
-                size="small"
-                color="green-darken-1"
-                @click="addUser('add')"
-              ></v-btn>
+              <v-btn v-bind="props" icon="mdi-plus" size="small" color="green-darken-1" @click="addUser('add')"></v-btn>
             </template>
           </v-tooltip>
         </div>
@@ -278,23 +253,10 @@ onMounted(() => {
 
     <h1 class="my-3 text-h5 font-weight-bold">使用者列表</h1>
     <v-card border>
-      <v-data-table-server
-        v-if="totalItems > 0"
-        :loading="loading"
-        :headers="headers"
-        :items-length="totalItems"
-        :items-per-page="itemsPerPage"
-        :items="serverItems"
-        loading-text="資料查詢中... 請稍後"
-        no-data-text="查無資料"
-        class="elevation-1 uxSign--table"
-        item-value="name"
-        hide-default-footer
-        fixed-header
-        color="red"
-        hover
-        @update:options="loadItems"
-      >
+      <v-data-table-server v-if="totalItems > 0" :loading="loading" :headers="headers" :items-length="totalItems"
+        :items-per-page="itemsPerPage" :items="serverItems" loading-text="資料查詢中... 請稍後" no-data-text="查無資料"
+        class="elevation-1 uxSign--table" item-value="name" hide-default-footer fixed-header color="red" hover
+        @update:options="loadItems">
         <!-- 權限欄位 -->
         <template v-slot:item.roleId="{ item }">
           {{ roleTextTransform(item.roleId) }}
@@ -308,27 +270,15 @@ onMounted(() => {
           <!-- 編輯 -->
           <v-tooltip text="編輯" location="top">
             <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="mdi-note-edit-outline"
-                size="x-small"
-                color="blue-darken-1"
-                class="mx-1"
-                @click="editUser('edit', item)"
-              ></v-btn>
+              <v-btn v-bind="props" icon="mdi-note-edit-outline" size="x-small" color="blue-darken-1" class="mx-1"
+                @click="editUser('edit', item)"></v-btn>
             </template>
           </v-tooltip>
           <!-- 刪除 -->
           <v-tooltip text="刪除" location="top">
             <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="mdi-trash-can-outline"
-                size="x-small"
-                color="red-lighten-1"
-                class="mx-1"
-                @click="deleteUser(item)"
-              ></v-btn>
+              <v-btn v-bind="props" icon="mdi-trash-can-outline" size="x-small" color="red-lighten-1" class="mx-1"
+                @click="deleteUser(item)"></v-btn>
             </template>
           </v-tooltip>
         </template>
@@ -345,12 +295,7 @@ onMounted(() => {
     <v-card v-if="totalItems > 0" class="mt-2" flat>
       <v-row class="ma-0 d-flex align-center justify-space-between">
         <v-col>
-          <v-pagination
-            v-model="page"
-            :length="pageCount"
-            density="compact"
-            rounded="circle"
-          ></v-pagination>
+          <v-pagination v-model="page" :length="pageCount" density="compact" rounded="circle"></v-pagination>
         </v-col>
 
         <v-col class="d-flex align-center">
@@ -360,16 +305,9 @@ onMounted(() => {
           </div>
           <div class="text-subtitle-1 text-medium-emphasis">每頁筆數：</div>
           <div style="width: 110px">
-            <v-select
-              :items="[5, 10, 20, 50, 100]"
-              :model-value="itemsPerPage"
-              :total-visible="7"
-              class="pa-2"
-              density="compact"
-              variant="outlined"
-              hide-details
-              @update:model-value="itemsPerPage = parseInt($event, 10)"
-            ></v-select>
+            <v-select :items="[5, 10, 20, 50, 100]" :model-value="itemsPerPage" :total-visible="7" class="pa-2"
+              density="compact" variant="outlined" hide-details
+              @update:model-value="itemsPerPage = parseInt($event, 10)"></v-select>
           </div>
         </v-col>
       </v-row>
@@ -377,13 +315,8 @@ onMounted(() => {
   </v-container>
 
   <!-- 編輯視窗 -->
-  <EditDialog
-    v-model:editDialog="editDialog"
-    :roles="roles"
-    :regionList="regionList"
-    :editType="editType"
-    :itemData="itemData"
-  ></EditDialog>
+  <EditDialog v-model:editDialog="editDialog" :roles="roles" :regionList="regionList" :editType="editType"
+    :itemData="itemData"></EditDialog>
 </template>
 
 <style lang="scss" scoped>
@@ -392,21 +325,17 @@ onMounted(() => {
     max-width: 1800px;
   }
 }
+
 :deep(.v-table__wrapper) {
   max-height: calc(100vh - 515px);
   min-height: 300px;
 }
+
 :deep(.v-data-table-footer) {
   display: none;
 }
-:deep(
-    .v-table.v-table--fixed-header.uxSign--table
-      > .v-table__wrapper
-      > table
-      > thead
-      > tr
-      > th
-  ) {
+
+:deep(.v-table.v-table--fixed-header.uxSign--table > .v-table__wrapper > table > thead > tr > th) {
   background-color: #ffe0b2 !important;
   font-weight: bolder;
 }

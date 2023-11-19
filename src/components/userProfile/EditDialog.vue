@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, onMounted } from "vue";
+import { ref, reactive, defineProps } from "vue";
 
 const props = defineProps({
   editDialog: {
@@ -7,11 +7,11 @@ const props = defineProps({
     default: false,
   },
   roles: {
-    type: Object,
+    type: Array,
     default: () => [],
   },
   regionList: {
-    type: Object,
+    type: Array,
     default: () => [],
   },
   editType: {
@@ -20,22 +20,12 @@ const props = defineProps({
   },
   itemData: {
     type: Object,
-    default: () => [],
+    default: () => ({}),
   },
 });
 const valid = ref(false);
-const editForm = ref(null);
-const initForm = ref({
-  uuid: null,
-  companyName: null,
-  pid: null,
-  userName: null,
-  passWord: null,
-  eMail: null,
-  roleId: null,
-  region: null,
-});
-const formData = ref({});
+const editFormRef = ref(null);
+const formData = reactive(props.itemData);
 // 欄位檢核
 const rules = ref({
   companyName: (value) => {
@@ -75,16 +65,9 @@ const rules = ref({
 
 const emit = defineEmits(["update:editDialog"]);
 
-onMounted(() => {
-  formData.value = { ...initForm.value };
-  if (props.editType === "edit") {
-    console.log("edit1");
-  }
-});
-
 const saveFormHandler = () => {
   // 欄位有錯誤，檢核未過不能送出表單
-  editForm.value.validate();
+  editFormRef.value.validate();
   if (!valid.value) return;
 
   // 送出表單
@@ -92,7 +75,7 @@ const saveFormHandler = () => {
 };
 
 const cancelHandler = () => {
-  formData.value = { ...initForm.value };
+  // formData.value = { ...initForm.value };
   emit("update:editDialog", false);
 };
 </script>
@@ -101,101 +84,42 @@ const cancelHandler = () => {
   <v-row justify="center">
     <v-dialog v-model.update="props.editDialog" persistent width="800">
       <v-card class="pa-3">
-        <v-form
-          ref="editForm"
-          v-model="valid"
-          @submit.prevent="saveFormHandler"
-        >
+        <v-form ref="editFormRef" v-model="valid" @submit.prevent="saveFormHandler">
           <v-card-title>
             <span class="text-h5 font-weight-bold">
-              {{ editType === "add" ? "新增" : "編輯" }}使用者資料</span
-            >
+              {{ editType === "add" ? "新增" : "編輯" }}使用者資料</span>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="formData.companyName"
-                    label="公司名稱"
-                    density="compact"
-                    variant="outlined"
-                    :rules="[rules.companyName]"
-                    hide-details="auto"
-                    required
-                  ></v-text-field>
+                  <v-text-field v-model="formData.companyName" label="公司名稱" density="compact" variant="outlined"
+                    :rules="[rules.companyName]" hide-details="auto" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="formData.userName"
-                    label="姓名"
-                    density="compact"
-                    variant="outlined"
-                    :rules="[rules.userName]"
-                    hide-details="auto"
-                    required
-                  ></v-text-field>
+                  <v-text-field v-model="formData.userName" label="姓名" density="compact" variant="outlined"
+                    :rules="[rules.userName]" hide-details="auto" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="formData.pid"
-                    label="用戶帳號"
-                    density="compact"
-                    variant="outlined"
-                    :rules="[rules.pid]"
-                    hide-details="auto"
-                    required
-                  ></v-text-field>
+                  <v-text-field v-model="formData.pid" label="用戶帳號" density="compact" variant="outlined"
+                    :rules="[rules.pid]" hide-details="auto" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="formData.passWord"
-                    label="密碼"
-                    type="password"
-                    density="compact"
-                    variant="outlined"
-                    autocomplete="off"
-                    :autofocus="false"
-                    :rules="[rules.password]"
-                    hide-details="auto"
-                    required
-                  ></v-text-field>
+                  <v-text-field v-model="formData.passWord" label="密碼" type="password" density="compact"
+                    variant="outlined" autocomplete="off" :autofocus="false" :rules="[rules.password]" hide-details="auto"
+                    required></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field
-                    v-model="formData.eMail"
-                    label="Email"
-                    density="compact"
-                    variant="outlined"
-                    autocomplete="off"
-                    :rules="[rules.isMail, rules.eMail]"
-                    hide-details="auto"
-                    required
-                  ></v-text-field>
+                  <v-text-field v-model="formData.eMail" label="Email" density="compact" variant="outlined"
+                    autocomplete="off" :rules="[rules.isMail, rules.eMail]" hide-details="auto" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select
-                    v-model="formData.roleId"
-                    :items="roles"
-                    label="權限設定"
-                    density="compact"
-                    variant="outlined"
-                    :rules="[rules.roleId]"
-                    hide-details="auto"
-                    required
-                  ></v-select>
+                  <v-select v-model="formData.roleId" :items="roles" label="權限設定" density="compact" variant="outlined"
+                    :rules="[rules.roleId]" hide-details="auto" required></v-select>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-select
-                    v-model="formData.region"
-                    :items="regionList"
-                    label="憑證類型"
-                    density="compact"
-                    variant="outlined"
-                    :rules="[rules.region]"
-                    hide-details="auto"
-                    required
-                  ></v-select>
+                  <v-select v-model="formData.region" :items="regionList" label="憑證類型" density="compact"
+                    variant="outlined" :rules="[rules.region]" hide-details="auto" required></v-select>
                 </v-col>
               </v-row>
             </v-container>
