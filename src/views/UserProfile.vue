@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from "vue";
 import EditDialog from "@/components/userProfile/EditDialog.vue";
-import InfoDialog from "@/components/userProfile/InfoDialog.vue";
+import InfoDialog from "@/components/InfoDialog.vue";
 
 const valid = ref(false);
 const searchForm = ref(null);
@@ -340,6 +340,7 @@ onMounted(() => {
     <v-card border>
       <v-data-table-server
         v-if="totalItems > 0"
+        v-model:page="page"
         :loading="loading"
         :headers="headers"
         :items-length="totalItems"
@@ -373,7 +374,7 @@ onMounted(() => {
                 icon="mdi-note-edit-outline"
                 size="x-small"
                 color="blue-darken-1"
-                class="mx-1"
+                class="ma-1"
                 @click="editUser('edit', item)"
               ></v-btn>
             </template>
@@ -386,7 +387,7 @@ onMounted(() => {
                 icon="mdi-trash-can-outline"
                 size="x-small"
                 color="red-lighten-1"
-                class="mx-1"
+                class="ma-1"
                 @click="deleteUser(item)"
               ></v-btn>
             </template>
@@ -449,10 +450,22 @@ onMounted(() => {
   <!-- 確認對話視窗 -->
   <InfoDialog
     v-model:infoDialog="infoDialog"
-    :roles="roles"
     :itemData="itemData"
     @isConfirm="confirmDelete"
-  ></InfoDialog>
+  >
+    <template v-slot:content>
+      <div>
+        <v-icon size="100" color="deep-orange-lighten-1" class="mb-4">
+          mdi-alert-circle-outline
+        </v-icon>
+      </div>
+      <span class="text-h5 font-weight-bold">
+        確認刪除使用者
+        <span class="text-blue-darken-1">{{ itemData.userName }}</span>
+        ?
+      </span>
+    </template>
+  </InfoDialog>
 </template>
 
 <style lang="scss" scoped>

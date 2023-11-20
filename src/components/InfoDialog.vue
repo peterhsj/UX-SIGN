@@ -32,18 +32,7 @@ const cancelHandler = () => {
           <span class="text-h5 font-weight-bold"></span>
         </v-card-title>
         <v-card-text class="text-center py-5">
-          <div>
-            <v-icon size="100" color="deep-orange-lighten-1" class="mb-4"
-              >mdi-alert-circle-outline</v-icon
-            >
-          </div>
-          <span class="text-h5 font-weight-bold">
-            確認刪除使用者
-            <span class="text-blue-darken-1">{{
-              props.itemData.userName
-            }}</span>
-            ?
-          </span>
+          <slot name="content"></slot>
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
