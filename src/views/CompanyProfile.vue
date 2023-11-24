@@ -1,7 +1,7 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from "vue";
 import EditDialog from "@/components/companyProfile/EditDialog.vue";
 import InfoDialog from "@/components/InfoDialog.vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 
 const valid = ref(false);
 const searchForm = ref(null);
@@ -256,7 +256,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container id="UserProfile">
+  <v-container id="CompanyProfile">
     <h1 class="my-3 text-h5 font-weight-bold">公司資料維護</h1>
     <v-form ref="searchForm" v-model="valid" @submit.prevent="queryHandler">
       <v-card border class="pa-4">

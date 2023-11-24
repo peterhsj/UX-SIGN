@@ -30,9 +30,9 @@ const routes = [
         component: () => import('@/views/CompanyProfile.vue')
       },
       {
-        path: '/Seal',
-        name: 'Seal',
-        component: () => import('@/views/Seal.vue')
+        path: '/Signature',
+        name: 'Signature',
+        component: () => import('@/views/Signature.vue')
       },
       {
         path: '/Logout',
